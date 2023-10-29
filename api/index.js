@@ -17,6 +17,17 @@ mongoose.connect(process.env.MONGODB_URI).then(()=>{
 const app = express();
 app.use(express.json())
 app.use(morgan('dev'))
+
+app.use((error, req, res, next)=>{
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    return res.status(statusCode).json({
+        success:false,
+        message,
+        statusCode,
+    })
+})
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, ()=>{
@@ -25,10 +36,3 @@ app.listen(port, ()=>{
 
 app.use('api/user', userRoute); 
 app.use('/api/auth', authRoute); 
-
-
-// app.get('/test',(req,res)=>{
-//     res.json({
-//         message:'Hello world!',
-//     })
-// })
